@@ -1,4 +1,4 @@
-package proyectograficacion2d;
+8package proyectograficacion2d;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -166,3 +166,56 @@ class Canvas2D extends JPanel {
         }
         return C;
     }
+// Renderizado y Fuentes de Texto
+
+    @Override
+        protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                        Graphics2D g2d = (Graphics2D) g;
+
+                                // Suavizado de bordes (Antialiasing)
+                                        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                                                int centroX = getWidth() / 2;
+                                                        int centroY = getHeight() / 2;
+
+                                                                // Plano cartesiano (Ejes X y Y)
+                                                                        g2d.setColor(new Color(220, 220, 220));
+                                                                                g2d.drawLine(centroX, 0, centroX, getHeight());
+                                                                                        g2d.drawLine(0, centroY, getWidth(), centroY);
+
+                                                                                                // Transformación de coordenadas de los vértices
+                                                                                                        int n = verticesOriginales.length;
+                                                                                                                int[] xPoints = new int[n];
+                                                                                                                        int[] yPoints = new int[n];
+
+                                                                                                                                for (int i = 0; i < n; i++) {
+                                                                                                                                            double xOrig = verticesOriginales[i][0];
+                                                                                                                                                        double yOrig = verticesOriginales[i][1];
+
+                                                                                                                                                                    // Multiplicación de la matriz acumulada por el vector del vértice
+                                                                                                                                                                                double xTrans = matrizAcumulada[0][0] * xOrig + matrizAcumulada[0][1] * yOrig + matrizAcumulada[0][2];
+                                                                                                                                                                                            double yTrans = matrizAcumulada[1][0] * xOrig + matrizAcumulada[1][1] * yOrig + matrizAcumulada[1][2];
+
+                                                                                                                                                                                                        // Convertir coordenadas del centro cartesiano a pixeles de la ventana
+                                                                                                                                                                                                                    xPoints[i] = (int) Math.round(centroX + xTrans);
+                                                                                                                                                                                                                                yPoints[i] = (int) Math.round(centroY - yTrans);
+                                                                                                                                                                                                                                        }
+
+                                                                                                                                                                                                                                                // Relleno y contorno de la figura
+                                                                                                                                                                                                                                                        g2d.setColor(new Color(52, 152, 219));
+                                                                                                                                                                                                                                                                g2d.fillPolygon(xPoints, yPoints, n);
+                                                                                                                                                                                                                                                                        g2d.setColor(new Color(41, 128, 185));
+                                                                                                                                                                                                                                                                                g2d.drawPolygon(xPoints, yPoints, n);
+
+                                                                                                                                                                                                                                                                                        // Renderizado de fuentes de texto
+                                                                                                                                                                                                                                                                                                g2d.setFont(new Font("Arial", Font.BOLD, 16));
+                                                                                                                                                                                                                                                                                                        g2d.setColor(Color.DARK_GRAY);
+                                                                                                                                                                                                                                                                                                                g2d.drawString("Demostración de Graficación 2D", 20, 35);
+
+                                                                                                                                                                                                                                                                                                                        g2d.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                                                                                                                                                                                                                                                                                                                                g2d.setColor(Color.BLUE);
+                                                                                                                                                                                                                                                                                                                                        g2d.drawString(String.format("Desplazamiento X: %.1f | Y: %.1f", matrizAcumulada[0][2], matrizAcumulada[1][2]), 20, 60);
+                                                                                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                                                                                            
