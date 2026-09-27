@@ -70,3 +70,99 @@ public class Editor2D extends JFrame {
         });
     }
 }
+
+ // Clase personalizada del lienzo
+
+class Canvas2D extends JPanel {
+
+    // Vértices del rectángulo original en coordenadas relativas al centro (x, y, 1)
+    private final double[][] verticesOriginales = {
+        {-60, -40, 1},
+        { 60, -40, 1},
+        { 60,  40, 1},
+        {-60,  40, 1}
+    };
+
+    // Matriz de transformación acumulada
+    private double[][] matrizAcumulada;
+
+    public Canvas2D() {
+        setBackground(Color.WHITE);
+        reiniciar();
+    }
+
+    public void reiniciar() {
+        // Matriz Identidad 3x3 inicial
+        matrizAcumulada = new double[][]{
+            {1, 0, 0},
+            {0, 1, 0},
+            {0, 0, 1}
+        };
+        repaint();
+    }
+
+    
+    //Traslación y Escalamiento
+    
+    public void aplicarTraslacion(double dx, double dy) {
+        double[][] T = {
+            {1, 0, dx},
+            {0, 1, dy},
+            {0, 0,  1}
+        };
+        matrizAcumulada = multiplicarMatrices(T, matrizAcumulada);
+        repaint();
+    }
+
+    public void aplicarEscalamiento(double sx, double sy) {
+        double[][] S = {
+            {sx,  0, 0},
+            { 0, sy, 0},
+            { 0,  0, 1}
+        };
+        matrizAcumulada = multiplicarMatrices(S, matrizAcumulada);
+        repaint();
+    }
+
+    
+    //Rotación y Sesgado
+    
+    public void aplicarRotacion(double grados) {
+        double rad = Math.toRadians(grados);
+        double cos = Math.cos(rad);
+        double sin = Math.sin(rad);
+
+        double[][] R = {
+            {cos, -sin, 0},
+            {sin,  cos, 0},
+            {  0,    0, 1}
+        };
+        matrizAcumulada = multiplicarMatrices(R, matrizAcumulada);
+        repaint();
+    }
+
+    public void aplicarSesgado(double shx, double shy) {
+        double[][] SH = {
+            {  1, shx, 0},
+            {shy,   1, 0},
+            {  0,   0, 1}
+        };
+        matrizAcumulada = multiplicarMatrices(SH, matrizAcumulada);
+        repaint();
+    }
+
+    
+    //Representación Matricial (Multiplicación 3x3)
+    
+    private double[][] multiplicarMatrices(double[][] A, double[][] B) {
+        double[][] C = new double[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                C[i][j] = 0;
+                for (int k = 0; k < 3; k++) {
+                    C[i][j] += A[i][k] * B[k][j];
+                }
+            }
+        }
+        return C;
+    }
